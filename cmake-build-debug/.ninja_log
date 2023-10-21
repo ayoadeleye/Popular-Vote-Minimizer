@@ -1,0 +1,8 @@
+# ninja log v5
+130	331	7191723578173888	untitled.exe	6525808909fc7b1a
+8	121	7191741605406928	CMakeFiles/untitled.dir/test.c.obj	afc8a75eecba9d12
+12	122	7191741605416902	CMakeFiles/untitled.dir/MinPopVote.c.obj	65bed01ac1373e71
+1	137	7191741605576465	CMakeFiles/untitled.dir/app.c.obj	92908042a5b71a26
+8	379	7194719917971628	CMakeFiles/untitled.dir/test.c.obj	afc8a75eecba9d12
+3	381	7194719917971628	CMakeFiles/untitled.dir/app.c.obj	92908042a5b71a26
+14	385	7194719918031479	CMakeFiles/untitled.dir/MinPopVote.c.obj	65bed01ac1373e71
