@@ -114,7 +114,7 @@ bool readElectionData(char* filename, State* allStates, int* nStates) {
     *nStates = 0;
 
     // Buffer to store a line from the file
-    char line[256]; // Adjust the buffer size as needed
+    char line[1000];
 
     if(file == NULL){
         return false;
@@ -229,27 +229,25 @@ MinInfo minPopVoteAtLeastFast(State* states, int szStates, int start, int EVs, M
     //                functioning code from
     //                minPopVoteAtLeast() and make
     //                additions for memoization
-    //----------------------------------------------
-    if(memo[start][EVs].subsetPVs != -1){
-        return memo[start][EVs];
-    }
+    //---------------------------------------------
 
+    MinInfo result;
     if (EVs <= 0) {
-        MinInfo result;
         result.szSomeStates = 0;
         result.subsetPVs = 0;
         result.sufficientEVs = true;
-        memo[start][EVs] = result;
         return result;
     }
 
     if (start >= szStates) {
-        MinInfo result;
         result.szSomeStates = 0;
         result.subsetPVs = 0;
         result.sufficientEVs = false;
-        memo[start][EVs] = result;
-        return result; // We've achieved sufficient electoral votes; return an empty result.
+        return result;
+    }
+
+    if (memo[start][EVs].subsetPVs != -1) {
+        return memo[start][EVs];
     }
 
     // Exclude the current state from the subset.
@@ -257,7 +255,7 @@ MinInfo minPopVoteAtLeastFast(State* states, int szStates, int start, int EVs, M
 
     // Include the current state in the subset.
     MinInfo includeState = minPopVoteAtLeastFast(states, szStates, start + 1, EVs - states[start].electoralVotes, memo);
-    includeState.subsetPVs += (states[start].popularVotes/2) + 1;
+    includeState.subsetPVs += (states[start].popularVotes / 2) + 1;
     includeState.someStates[includeState.szSomeStates] = states[start];
     includeState.szSomeStates++;
 
@@ -286,7 +284,6 @@ MinInfo minPopVoteToWinFast(State* states, int szStates) {
     }
     MinInfo res = minPopVoteAtLeastFast(states, szStates, 0, reqEVs, memo);
 
-
     //----------------------------------------------
     // TODO: Task 8 - [memo] will go out of scope
     //                upon return, so free all
@@ -300,27 +297,32 @@ MinInfo minPopVoteToWinFast(State* states, int szStates) {
 
     return res;
 
+}
 
+int compareStatesByName(const void* a, const void* b) {
+    return strcmp(((State*)a)->name, ((State*)b)->name);
 }
 
 bool writeSubsetData(char* filenameW, int totEVs, int totPVs, int wonEVs, MinInfo toWin) {
     //-----------------------------------------------------
     // TODO: Task 9 - write the writeSubsetData() function
     //-----------------------------------------------------
-    /* FILE* file = fopen(filenameW, "w");
+    FILE* file = fopen(filenameW, "w");
 
-     if(file == NULL){
-         return false;
-     }
+    if(file == NULL){
+        return false;
+    }
 
-     fprintf(file, "%d,%d,%d,%d\n", totEVs, totPVs, wonEVs, toWin.subsetPVs);
+    qsort(toWin.someStates, toWin.szSomeStates, sizeof(State), compareStatesByName);
 
-     for(int i = 0; i < toWin.szSomeStates; i++){
-         fprintf(file, "%s,%s,%d,%d\n", states[i].stateName, states[i].postalCode, states[i].electoralVotes, (states[i].popularVotes/2) + 1)
-     }
 
-     fclose(file);
+    fprintf(file, "%d,%d,%d,%d\n", totEVs, totPVs, wonEVs, toWin.subsetPVs);
 
-     return true;*/
-    return false;
+    for(int i = 0; i < toWin.szSomeStates; i++){
+        fprintf(file, "%s,%s,%d,%d\n", toWin.someStates[i].name, toWin.someStates[i].postalCode, toWin.someStates[i].electoralVotes, (toWin.someStates[i].popularVotes / 2) + 1);
+    }
+
+    fclose(file);
+
+    return true;
 }
